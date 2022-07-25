@@ -1,0 +1,9 @@
+Using sparse matrix from scipy should be more efficient 07/13
+
+Equation parrallel fibers plasticity 07/13 :
+
+w = w + (gc_activity+cb_activity)*(switch)
+
+with switch = -1 if:
+    gc_activity+cb_activity>threshold
+else switch = 1
