@@ -1,17 +1,23 @@
-from neuron_pop import NeuronPop
 from utils import *
 import numpy as np
 from copy import deepcopy
-
+import matplotlib.pyplot as plt 
 # Bunch of metavariables
-divergence=3
+divergence=5
 input_size=100
 DCN_size=100
 IO_size=100
 GC_size=100
 PC_size=100
-min_activity=0
-max_activity=1
+mean_w_GC_PC=1
+mean_w_PC_DCN=3
+mean_w_DCN_IO=1
+mean_w_IO_PC=3
+mean_w_PT_GC=1
+mean_w_PT_DCN=1
+mean_w_PT_IO=3
+# min_activity=0
+# max_activity=2
 
 cere_info = dict()
 
@@ -54,37 +60,45 @@ p_PT_DCN = ((DCN_size/input_size)/input_size)*divergence
 p_PT_IO = ((IO_size/input_size)/input_size)*divergence
 
 cere_info["synapse_pop"]=dict()
-cere_info["synapse_pop"]["GC_PC_syn"]=dict()
-cere_info["synapse_pop"]["GC_PC_syn"]["i_o"]=("GC","PC")
-cere_info["synapse_pop"]["GC_PC_syn"]["type"]="excitatory"
-cere_info["synapse_pop"]["GC_PC_syn"]["p"]=p_GC_PC
-cere_info["synapse_pop"]["PC_DCN_syn"]=dict()
-cere_info["synapse_pop"]["PC_DCN_syn"]["i_o"]=("PC","DCN")
-cere_info["synapse_pop"]["PC_DCN_syn"]["type"]="inhibitory"
-cere_info["synapse_pop"]["PC_DCN_syn"]["p"]=p_PC_DCN
-cere_info["synapse_pop"]["DCN_IO_syn"]=dict()
-cere_info["synapse_pop"]["DCN_IO_syn"]["i_o"]=("DCN","IO")
-cere_info["synapse_pop"]["DCN_IO_syn"]["type"]="inhibitory"
-cere_info["synapse_pop"]["DCN_IO_syn"]["p"]=p_DCN_IO
-cere_info["synapse_pop"]["IO_PC_syn"]=dict()
-cere_info["synapse_pop"]["IO_PC_syn"]["i_o"]=("IO","PC")
-cere_info["synapse_pop"]["IO_PC_syn"]["type"]="Undefined"
-cere_info["synapse_pop"]["IO_PC_syn"]["p"]=p_IO_PC
-cere_info["synapse_pop"]["PT_GC_syn"]=dict()
-cere_info["synapse_pop"]["PT_GC_syn"]["i_o"]=("PT","GC")
-cere_info["synapse_pop"]["PT_GC_syn"]["type"]="excitatory"
-cere_info["synapse_pop"]["PT_GC_syn"]["p"]=p_PT_GC
-cere_info["synapse_pop"]["PT_DCN_syn"]=dict()
-cere_info["synapse_pop"]["PT_DCN_syn"]["i_o"]=("PT","DCN")
-cere_info["synapse_pop"]["PT_DCN_syn"]["type"]="excitatory"
-cere_info["synapse_pop"]["PT_DCN_syn"]["p"]=p_PT_DCN
-cere_info["synapse_pop"]["PT_IO_syn"]=dict()
-cere_info["synapse_pop"]["PT_IO_syn"]["i_o"]=("PT","IO")
-cere_info["synapse_pop"]["PT_IO_syn"]["type"]="excitatory"
-cere_info["synapse_pop"]["PT_IO_syn"]["p"]=p_PT_IO
+cere_info["synapse_pop"]["GC_PC"]=dict()
+cere_info["synapse_pop"]["GC_PC"]["i_o"]=("GC","PC")
+cere_info["synapse_pop"]["GC_PC"]["type"]="excitatory"
+cere_info["synapse_pop"]["GC_PC"]["p"]=p_GC_PC
+cere_info["synapse_pop"]["PC_DCN"]=dict()
+cere_info["synapse_pop"]["PC_DCN"]["i_o"]=("PC","DCN")
+cere_info["synapse_pop"]["PC_DCN"]["type"]="inhibitory"
+cere_info["synapse_pop"]["PC_DCN"]["p"]=p_PC_DCN
+cere_info["synapse_pop"]["DCN_IO"]=dict()
+cere_info["synapse_pop"]["DCN_IO"]["i_o"]=("DCN","IO")
+cere_info["synapse_pop"]["DCN_IO"]["type"]="inhibitory"
+cere_info["synapse_pop"]["DCN_IO"]["p"]=p_DCN_IO
+cere_info["synapse_pop"]["IO_PC"]=dict()
+cere_info["synapse_pop"]["IO_PC"]["i_o"]=("IO","PC")
+cere_info["synapse_pop"]["IO_PC"]["type"]="Undefined"
+cere_info["synapse_pop"]["IO_PC"]["p"]=p_IO_PC
+cere_info["synapse_pop"]["PT_GC"]=dict()
+cere_info["synapse_pop"]["PT_GC"]["i_o"]=("PT","GC")
+cere_info["synapse_pop"]["PT_GC"]["type"]="excitatory"
+cere_info["synapse_pop"]["PT_GC"]["p"]=p_PT_GC
+cere_info["synapse_pop"]["PT_DCN"]=dict()
+cere_info["synapse_pop"]["PT_DCN"]["i_o"]=("PT","DCN")
+cere_info["synapse_pop"]["PT_DCN"]["type"]="excitatory"
+cere_info["synapse_pop"]["PT_DCN"]["p"]=p_PT_DCN
+cere_info["synapse_pop"]["PT_IO"]=dict()
+cere_info["synapse_pop"]["PT_IO"]["i_o"]=("PT","IO")
+cere_info["synapse_pop"]["PT_IO"]["type"]="excitatory"
+cere_info["synapse_pop"]["PT_IO"]["p"]=p_PT_IO
+
+base_mean_w= 1/divergence
+cere_info["synapse_pop"]["GC_PC"]["mean_weight"]=base_mean_w*mean_w_GC_PC
+cere_info["synapse_pop"]["PC_DCN"]["mean_weight"]=base_mean_w*mean_w_PC_DCN
+cere_info["synapse_pop"]["DCN_IO"]["mean_weight"]=base_mean_w*mean_w_DCN_IO
+cere_info["synapse_pop"]["IO_PC"]["mean_weight"]=base_mean_w*mean_w_IO_PC
+cere_info["synapse_pop"]["PT_GC"]["mean_weight"]=base_mean_w*mean_w_PT_GC
+cere_info["synapse_pop"]["PT_DCN"]["mean_weight"]=base_mean_w*mean_w_PT_DCN
+cere_info["synapse_pop"]["PT_IO"]["mean_weight"]=base_mean_w*mean_w_PT_IO
 
 for key in cere_info["synapse_pop"]:
-    cere_info["synapse_pop"][key]["mean_weight"]=1/divergence
     cere_info["synapse_pop"][key]["local_variables"]=dict()
     input_pop = cere_info["synapse_pop"][key]["i_o"][0]
     input_pop_size = cere_info["neuron_pop"][input_pop]["size"]
@@ -142,18 +156,19 @@ for key in cere_info["synapse_pop"]:
 """Some events are custom and correspond to the specific behavior of the Cerebellum"""
 
 # correspond to the presynaptic increase in calcium leading to plasticity
+new_event=dict()
 new_event["args_paths"]=(("neuron_pop","IO","local_variables","activity"),
-            ("synapse_pop","IO_PC_syn","local_variables","weight")) 
+            ("synapse_pop","IO_PC","local_variables","weight")) 
 new_event["output"] = ("neuron_pop","PC","local_variables","calcium")
 new_event["function"]=default_excitatory_behavior 
 cere_events.append(new_event)
-new_event=dict()
 # correspond to the actual plasticity mecanism depending on granule cells 
 # activity and calcium transients induced by IO activity in Purkinje cells
+new_event=dict()
 new_event["args_paths"]=(("neuron_pop","GC","local_variables","activity"),
             ("neuron_pop","PC","local_variables","calcium"),
-            ("synapse_pop","GC_PC_syn","local_variables","weight"))
-new_event["output"] = ("synapse_pop","GC_PC_syn","local_variables","weight")
+            ("synapse_pop","GC_PC","local_variables","weight"))
+new_event["output"] = ("synapse_pop","GC_PC","local_variables","weight")
 new_event["function"]=parallel_fiber_plasticity 
 cere_events.append(new_event)
 
@@ -200,19 +215,21 @@ for event in cere_events:
 cere_state["neuron_pop"]["PT"]["local_variables"]["activity"][:]=np.ones(100)#Try to put some value for the network inputs
 cere_state_pre["neuron_pop"]["PT"]["local_variables"]["activity"][:]=np.ones(100)
 #np.copyto(event["output"],event["function"](*event["args_tuple"]))
-print(cere_events[3])
-print(event_pointers[3])
-test_event= event_pointers[3]
+print(cere_events[1])
+#print(event_pointers[1])
+
+test_event= event_pointers[1]
 output_event = test_event["function"](*test_event["args_tuple"])
 np.copyto(test_event["output"],output_event(test_event["output"]))
-print("GC_activity")
-print(cere_state["neuron_pop"]["GC"]["local_variables"]["activity"])
+print("IO_activity")
+print(cere_state["neuron_pop"]["DCN"]["local_variables"]["activity"])
+
 update_copy_state(cere_state_pre,cere_state)
-print(cere_state_pre["neuron_pop"]["GC"]["local_variables"]["activity"])
+print(cere_state_pre["neuron_pop"]["IO"]["local_variables"]["activity"])
 for neuron_state in cere_states_neurons_pointers:
         neuron_state.fill(0)
-print("to zero GC actual state?")
-print(cere_state["neuron_pop"]["GC"]["local_variables"]["activity"])
+print("to zero IO actual state?")
+print(cere_state["neuron_pop"]["IO"]["local_variables"]["activity"])
 print("to one PT actual state?")
 print(cere_state["neuron_pop"]["PT"]["local_variables"]["activity"])
 output_event = test_event["function"](*test_event["args_tuple"])
@@ -221,9 +238,14 @@ output_event = test_event["function"](*test_event["args_tuple"])
 
 print("output of the event :")
 print(np.mean(output_event(test_event["output"])))
+
 """
 
-nb_time_steps = 10
+nb_time_steps = 10000
+activity_t = dict()
+for neuron_pop in cere_state["neuron_pop"]:
+    activity_t[neuron_pop]=np.zeros((cere_info["neuron_pop"][neuron_pop]["size"],nb_time_steps))
+
 for t in range(nb_time_steps):
     update_copy_state(cere_state_pre,cere_state)
     for neuron_state in cere_states_neurons_pointers:
@@ -231,6 +253,16 @@ for t in range(nb_time_steps):
     cere_state["neuron_pop"]["PT"]["local_variables"]["activity"][:]=np.ones(100)#Try to put some value for the network inputs
     for event in event_pointers:
         np.copyto(event["output"],event["function"](*event["args_tuple"])(event["output"]))
+    for neuron_pop in cere_state["neuron_pop"]:
+        cere_state["neuron_pop"][neuron_pop]["local_variables"]["activity"][:]=np.clip(cere_state["neuron_pop"][neuron_pop]["local_variables"]["activity"],a_min = 0,a_max=None)
+        activity_t[neuron_pop][t,:]=cere_state["neuron_pop"][neuron_pop]["local_variables"]["activity"]
 
-print(cere_state["neuron_pop"])
-#print(event_pointers[3])
+
+    #print(cere_state["neuron_pop"]["IO"]["local_variables"]["activity"])
+
+print([(name,np.mean(activity["local_variables"]["activity"])) for name,activity in cere_state["neuron_pop"].items()])
+print(('calcium_pc',np.mean(cere_state["neuron_pop"]["PC"]["local_variables"]["calcium"])))
+print(cere_state["neuron_pop"]["PC"]["local_variables"]["calcium"])
+print([(name,np.min(activity["local_variables"]["activity"]),np.max(activity["local_variables"]["activity"])) for name,activity in cere_state["neuron_pop"].items()])
+#print(event_pointers[3]) """
+#print(np.min(cere_state["synapse_pop"]["GC_PC"]["local_variables"]["weight"]))

@@ -18,7 +18,7 @@ def gene_w_mat(p,size_a,size_b,mean_weight):
 
 def default_inhibitory_behavior(activity_source,w):
     a = activity_source
-    to_apply = lambda x : np.clip(x-(activity_source@w),0,np.inf)
+    to_apply = lambda x : x-(activity_source@w)
     return to_apply #target pop activity
 
 def default_excitatory_behavior(activity_source,w):
@@ -38,7 +38,8 @@ def parallel_fiber_plasticity(activity_source,calcium_target,parallel_fibers_w):
     growth_matrix = np.where(parallel_fibers_w>0,growth_matrix,0) # if there is no synapse, growth factor is equal to 0
     growth_matrix = np.where(growth_matrix>threshold_plasticty,-growth_matrix,growth_matrix)
     growth_matrix = growth_matrix*delta_plasticity
-    to_apply = lambda x : x+growth_matrix
+    to_apply = lambda x : np.clip(x+growth_matrix,a_min=0,a_max=None) # WARNING: could be problemetic if many events modify the synaptic weight. 
+    # If it is the case the clip should be outside of the event function. But here it is ok as this function is the only one modifying the
     return to_apply # to add to parrallel fibers weights
     
 def update_copy_state(cere_state_copy,cere_state):
