@@ -7,3 +7,24 @@ w = w + (gc_activity+cb_activity)*(switch)
 with switch = -1 if:
     gc_activity+cb_activity>threshold
 else switch = 1
+
+Change plasticity rule, every synapse at zero are then ignored ..
+
+Maybe just change how we deal with synapses overall !
+
+The simpler case to verigy will be very dense connectivity with uniform activity from pontine.
+What I expect to see is oscillation of the synaptic weights and of the IO activity around the threshold value.
+Then slowly sparsify the connectivity until abnormal state is produced with divergence of activity/weights.
+Divergence of activity/weights shoul signify that somme neurons/synapses are not able to safely take part of 
+the homeostatic loop/mechanism. 
+
+If the amount of intracellular calcium is propotional to the GC_PC weights, we can get a self stabilieing mechanism.
+But do we want ?
+
+
+La capacité à résoudre précisément des mismatch DCN-IO émerge de la spécificité de l'origine du signal inhibiteur pouvant résoudre ce mismatch. 
+L'activation d'un petite sous population des granule cells et donc d'une petite sous population de des purkinje cells permet d'induire une plasticité ciblé 
+menant 
+
+To simplify the complexity of the input of each neuronal population we can take the n most activated units and put them to one.
+Such as n is a number that allow the reaching and the solving of the IO activity induced by the mismatch.
