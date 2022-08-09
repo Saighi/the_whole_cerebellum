@@ -1,3 +1,4 @@
+from xml.dom.expatbuilder import theDOMImplementation
 from utils import *
 import numpy as np
 from copy import deepcopy
@@ -9,8 +10,12 @@ def whole_model_sim(cere_info,input_dict):
     Keyword arguments:
     params -- a dictionary with all the parameters of the model
     """
+    microzone_synapses={"PC_DCN","DCN_IO","IO_PC"} #microzone synapses have a special treatment as we need to keep
+    # track of each pathway
 
     cere_state = dict() # Will store all the vectors describing the state of the cerebellum at one given moment
+    
+    """We are just initializing the state variables with vectors as numpy arrays"""
     cere_state["neuron_pop"]=dict()
     for key in cere_info["neuron_pop"]:
         cere_state["neuron_pop"][key]=dict()
@@ -23,21 +28,13 @@ def whole_model_sim(cere_info,input_dict):
     for key in cere_info["synapse_pop"]:
         cere_state["synapse_pop"][key]=dict()
         cere_state["synapse_pop"][key]["local_variables"]=dict()
-        nb_connect = cere_info["synapse_pop"][key]["nb_connect"]
-        input_pop = cere_info["synapse_pop"][key]["i_o"][0]
-        input_pop_size = cere_info["neuron_pop"][input_pop]["size"]
-        target_pop = cere_info["synapse_pop"][key]["i_o"][1]
-        target_pop_size = cere_info["neuron_pop"][target_pop]["size"]
-        mean_weight = cere_info["synapse_pop"][key]["mean_weight"]
-        minimum_connect= cere_info["synapse_pop"][key]["minimum_connect"]
-        if key == "IO_PC":#Dealing with IO connectivity and weights
-            weight_matrice,connectivity = gene_w_exclusive(int(target_pop_size/input_pop_size),input_pop_size,target_pop_size,mean_weight)
-            cere_state["synapse_pop"][key]["local_variables"]["weight"]= weight_matrice
-            cere_state["synapse_pop"][key]["local_variables"]["connectivity"]= connectivity
-        else: 
-            weight_matrice,connectivity = gene_w_inclusive(nb_connect,input_pop_size,target_pop_size,mean_weight,minimum_connect)
-            cere_state["synapse_pop"][key]["local_variables"]["weight"]= weight_matrice
-            cere_state["synapse_pop"][key]["local_variables"]["connectivity"] = connectivity
+
+    """Creation of the connectivity matrices and initialisation of the synaptic weights for synapses outside of
+    the microzone."""
+    cere_state = generate_outside_microzone_connectivity(cere_info,cere_state,microzone_synapses)
+
+    """Creation of the connectivity matrices and initialisation of the synaptic weights for synapses inside of the microzones pathways"""
+    cere_state = generate_microzone_connectivity(cere_info,cere_state)
 
     cere_events = list() # Will store all actions needed to account for the algorithm, mainly synaptic transmission 
 
